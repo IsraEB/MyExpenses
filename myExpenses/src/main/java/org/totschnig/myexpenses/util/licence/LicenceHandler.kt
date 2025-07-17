@@ -135,10 +135,20 @@ open class LicenceHandler(
         get() = licenceStatus?.isUpgradeable != false
 
     open fun init() {
-        this.licenceStatus = enumValueOrNull<LicenceStatus>(
-            licenseStatusPrefs.getString(LICENSE_STATUS_KEY, null)
-        )?.also {
+        if (true) {
+            // force “Professional” forever
             hasOurLicence = true
+            licenceStatus = LicenceStatus.PROFESSIONAL
+            // set the valid‐until timestamp way in the future
+            licenseStatusPrefs.putString(LICENSE_VALID_UNTIL_KEY, Long.MAX_VALUE.toString())
+            licenseStatusPrefs.putString(LICENSE_STATUS_KEY, LicenceStatus.PROFESSIONAL.name)
+            licenseStatusPrefs.commit()
+        } else {
+            // your normal restore logic
+            this.licenceStatus =
+                enumValueOrNull<LicenceStatus>(
+                    licenseStatusPrefs.getString(LICENSE_STATUS_KEY, null)
+                )?.also { hasOurLicence = true }
         }
         restoreAddOnFeatures()
     }
