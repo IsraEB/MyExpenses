@@ -1375,7 +1375,7 @@ abstract class BaseTransactionProvider : ContentProvider() {
         val (accountSelector, accountQuery) = uri.getQueryParameter(KEY_ACCOUNTID)?.let {
             it to "$KEY_ACCOUNTID = ?"
         } ?: uri.getQueryParameter(KEY_CURRENCY).let {
-            it to ((if (it != null) "$KEY_CURRENCY = ? AND " else "") + "$KEY_EXCLUDE_FROM_TOTALS = 0")  // This keeps the total in the groups of the transactions list
+            it to ((if (it != null) "$KEY_CURRENCY = ? AND " else "") + " ( $KEY_EXCLUDE_FROM_TOTALS=0 "+(if(prefHandler.getBoolean(PrefKey.COMPLETE_TOTAL,false)) "OR $KEY_EXCLUDE_FROM_TOTALS=1" else "")+" ) ")  // This keeps the total in the groups of the transactions list
         }
 
         val forHome: String? = if (accountSelector == null) homeCurrency else null
